@@ -1,0 +1,42 @@
+# Dependencies
+node_modules/
+
+# Build and framework output
+dist/
+.output/
+.tanstack/
+.vercel/
+
+# App Builder workspace metadata and generated material
+.grok/
+public/__grok/
+AGENTS.md
+artifacts/
+attachments/
+screenshots/
+.local-preview.*.log
+.node_modules.lock
+
+# Local environment files
+.env
+.env.*
+!.env.example
+
+# Logs and test output
+*.log
+coverage/
+playwright-report/
+test-results/
+
+# Editor and operating-system files
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# Temporary files
+*.tmp
+*.temp
+*.swp
+*~

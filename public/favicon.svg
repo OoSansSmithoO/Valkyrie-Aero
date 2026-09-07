@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" role="img" aria-label="Valkyrie Aero">
+  <rect width="32" height="32" fill="#05070a"/>
+  <g fill="#e8903a">
+    <path d="M13 12 7 8 1 5 3 11 1 15 3 19 1 23 8 18 13 16Z"/>
+    <path d="M19 12 25 8 31 5 29 11 31 15 29 19 31 23 24 18 19 16Z"/>
+    <path d="M11 7c0-2.6 2.2-4.5 5-4.5s5 1.9 5 4.5v7.2c0 1.6-1.1 2.8-2.6 3.3l.6 3.5h-6l.6-3.5C12.1 17 11 15.8 11 14.2Z"/>
+  </g>
+  <g fill="#05070a">
+    <ellipse cx="13.6" cy="9.1" rx="2.1" ry="2.5"/>
+    <ellipse cx="18.4" cy="9.1" rx="2.1" ry="2.5"/>
+    <path d="M16 11.2 14.5 14.8h3Z"/>
+  </g>
+</svg>

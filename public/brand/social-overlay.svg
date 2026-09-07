@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <defs>
+    <linearGradient id="shade" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#020817" stop-opacity=".98"/>
+      <stop offset=".47" stop-color="#06162f" stop-opacity=".72"/>
+      <stop offset=".74" stop-color="#06162f" stop-opacity=".06"/>
+    </linearGradient>
+    <clipPath id="flag-clip"><rect x="70" y="566" width="78" height="44" rx="2"/></clipPath>
+    <path id="star" d="M0-2.2 0.65-0.7 2.2-0.7 0.95 0.25 1.4 1.9 0 1-1.4 1.9-0.95 0.25-2.2-0.7-0.65-0.7Z"/>
+  </defs>
+  <rect width="1200" height="630" fill="url(#shade)"/>
+  <rect x="70" y="72" width="54" height="4" fill="#f2a23a"/>
+  <text x="70" y="120" fill="#f2a23a" font-family="Arial, sans-serif" font-size="18" font-weight="700" letter-spacing="7">VALKYRIE AERO</text>
+  <text x="70" y="250" fill="#f7fbff" font-family="Arial, sans-serif" font-size="62" font-weight="700" letter-spacing="2">A-29 SUPER TUCANO</text>
+  <text x="70" y="320" fill="#f7fbff" font-family="Arial, sans-serif" font-size="62" font-weight="700" letter-spacing="2">PILOT TRAINING</text>
+  <text x="73" y="382" fill="#a8bad0" font-family="Arial, sans-serif" font-size="18" font-weight="600" letter-spacing="4">CADET TRAINING · UPT · IFF</text>
+  <line x1="70" y1="520" x2="540" y2="520" stroke="#f2a23a" stroke-opacity=".55"/>
+  <text x="70" y="551" fill="#eef5ff" font-family="Arial, sans-serif" font-size="16" font-weight="600" letter-spacing="3">FALCON FIELD · MESA, ARIZONA</text>
+  <g clip-path="url(#flag-clip)">
+    <rect x="70" y="566" width="78" height="44" fill="#fff"/>
+    <path stroke="#c8102e" stroke-width="3.4" d="M70 567.7h78m-78 6.8h78m-78 6.8h78m-78 6.8h78m-78 6.8h78m-78 6.8h78m-78 6.8h78"/>
+    <rect x="70" y="566" width="34" height="24" fill="#174a7e"/>
+    <g fill="#fff">
+      <use href="#star" transform="translate(76 571)"/><use href="#star" transform="translate(87 571)"/><use href="#star" transform="translate(98 571)"/>
+      <use href="#star" transform="translate(81.5 578)"/><use href="#star" transform="translate(92.5 578)"/>
+      <use href="#star" transform="translate(76 585)"/><use href="#star" transform="translate(87 585)"/><use href="#star" transform="translate(98 585)"/>
+    </g>
+  </g>
+  <text x="166" y="594" fill="#eef5ff" font-family="Arial, sans-serif" font-size="14" font-weight="700" letter-spacing="3">CREATED IN THE USA</text>
+</svg>

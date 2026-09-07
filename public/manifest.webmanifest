@@ -1,0 +1,17 @@
+{
+  "name": "Valkyrie Aero",
+  "short_name": "Valkyrie Aero",
+  "description": "Military air-school, JTAC, and A-29 Super Tucano pilot training.",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#020817",
+  "theme_color": "#06162f",
+  "icons": [
+    {
+      "src": "favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}
