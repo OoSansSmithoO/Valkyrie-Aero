@@ -74,6 +74,8 @@ export function NowSeries() {
                     src={file.img}
                     alt=""
                     className="h-full w-full object-cover opacity-50"
+                    loading="lazy"
+                    decoding="async"
                     crossOrigin="anonymous"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-void via-void/40 to-transparent" />

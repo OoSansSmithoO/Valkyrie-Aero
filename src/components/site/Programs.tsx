@@ -142,6 +142,8 @@ export function Programs() {
             src="cinematic/09-hard-bank.jpg"
             alt="A-29 Super Tucano in a hard bank"
             className="aspect-[16/10] w-full object-cover shadow-[0_0_0_1px_rgba(242,162,58,0.24)]"
+            loading="lazy"
+            decoding="async"
             crossOrigin="anonymous"
           />
         </div>
@@ -177,8 +179,8 @@ export function Programs() {
               <a href="#gimbal" className="explore mt-4 inline-flex items-center">EXPLORE THE DEMO</a>
             </div>
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-1">
-              <img src="brand/shahed.jpg" alt="Shahed-136 one-way attack drone" className="aspect-[16/9] w-full object-cover" crossOrigin="anonymous" />
-              <img src="cinematic/08-gimbal-eo.jpg" alt="A-29 counter-UAS mission visualization" className="aspect-[16/9] w-full object-cover" crossOrigin="anonymous" />
+              <img src="brand/shahed.jpg" alt="Shahed-136 one-way attack drone" className="aspect-[16/9] w-full object-cover" loading="lazy" decoding="async" crossOrigin="anonymous" />
+              <img src="cinematic/08-gimbal-eo.jpg" alt="A-29 counter-UAS mission visualization" className="aspect-[16/9] w-full object-cover" loading="lazy" decoding="async" crossOrigin="anonymous" />
             </div>
           </div>
         </div>

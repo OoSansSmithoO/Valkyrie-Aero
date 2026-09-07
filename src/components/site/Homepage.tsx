@@ -1,4 +1,4 @@
-import { lazy, Suspense } from "react";
+import { lazy, Suspense, useEffect, useState } from "react";
 import { useIntro } from "@/lib/intro-store";
 import { ValkyrieMark } from "@/components/intro/ValkyrieMark";
 import { NowSeries } from "./NowSeries";
@@ -59,9 +59,19 @@ const CAPABILITIES = [
   },
 ] as const;
 
-function Nav() {
+const NAV_ITEMS = [
+  ["ABOUT", "#about"],
+  ["TRAINING", "#training"],
+  ["A-29", "#gunslinger"],
+  ["SYSTEMS", "#capabilities"],
+  ["DEMO", "#gimbal"],
+  ["CONTACT", "#contact"],
+] as const;
+
+function Nav({ progress, dayOps, onTheme }: { progress: number; dayOps: boolean; onTheme: () => void }) {
   const play = useIntro((s) => s.play);
   const overlay = useIntro((s) => s.overlay);
+  const [open, setOpen] = useState(false);
   return (
     <header className="site-nav sticky top-0 z-40">
       <div className="mx-auto flex max-w-6xl items-center justify-between gap-2 px-4 py-3 sm:gap-4 sm:px-5 sm:py-4">
@@ -71,60 +81,72 @@ function Nav() {
             VALKYRIE AERO
           </span>
         </a>
-        <nav className="flex items-center gap-1 sm:gap-2">
-          <a
-            href="#about"
-            className="min-h-11 inline-flex items-center px-2 font-mono text-[9px] tracking-[0.16em] text-fog hover:text-paper sm:px-3 sm:text-[10px] sm:tracking-[0.22em]"
-          >
-            ABOUT
-          </a>
-          <a
-            href="#training"
-            className="min-h-11 inline-flex items-center px-2 font-mono text-[9px] tracking-[0.16em] text-fog hover:text-paper sm:px-3 sm:text-[10px] sm:tracking-[0.22em]"
-          >
-            TRAINING
-          </a>
-          <a
-            href="#gunslinger"
-            className="hidden min-h-11 items-center px-3 font-mono text-[10px] tracking-[0.22em] text-fog hover:text-paper sm:inline-flex"
-          >
-            A-29
-          </a>
-          <a
-            href="#capabilities"
-            className="hidden min-h-11 items-center px-3 font-mono text-[10px] tracking-[0.22em] text-fog hover:text-paper sm:inline-flex"
-          >
-            SYSTEMS
-          </a>
-          <a
-            href="#gimbal"
-            className="hidden min-h-11 items-center px-3 font-mono text-[10px] tracking-[0.22em] text-fog hover:text-paper sm:inline-flex"
-          >
-            DEMO
-          </a>
-          <a
-            href="#contact"
-            className="min-h-11 inline-flex items-center px-2 font-mono text-[9px] tracking-[0.16em] text-fog hover:text-paper sm:px-3 sm:text-[10px] sm:tracking-[0.22em]"
-          >
-            CONTACT
-          </a>
+        <nav className="hidden items-center gap-1 md:flex" aria-label="Primary navigation">
+          {NAV_ITEMS.map(([label, href]) => <a key={href} href={href} className="site-nav-link">{label}</a>)}
+          <button type="button" className="nav-utility" onClick={onTheme}>{dayOps ? "NIGHT OPS" : "DAY OPS"}</button>
           {overlay === "idle" ? (
             <button type="button" className="replay-btn" onClick={() => play("full")}>
               REPLAY BRIEFING
             </button>
           ) : null}
         </nav>
+        <button type="button" className="nav-utility md:hidden" aria-expanded={open} aria-controls="mobile-flight-menu" onClick={() => setOpen((value) => !value)}>
+          {open ? "CLOSE" : "FLIGHT MENU"}
+        </button>
       </div>
+      <div className="mission-progress" aria-hidden="true"><span style={{ width: `${progress}%` }} /></div>
+      {open ? <nav id="mobile-flight-menu" className="mobile-flight-menu" aria-label="Mobile navigation">
+        {NAV_ITEMS.map(([label, href]) => <a key={href} href={href} onClick={() => setOpen(false)}>{label}</a>)}
+        <button type="button" onClick={onTheme}>{dayOps ? "NIGHT OPS" : "DAY OPS"}</button>
+        {overlay === "idle" ? <button type="button" onClick={() => { setOpen(false); play("full"); }}>REPLAY BRIEFING</button> : null}
+      </nav> : null}
     </header>
   );
 }
 
 export function Homepage() {
-  return (
-    <div id="top" className="min-h-dvh bg-void text-paper">
-      <Nav />
+  const [progress, setProgress] = useState(0);
+  const [showTop, setShowTop] = useState(false);
+  const [dayOps, setDayOps] = useState(false);
+  const [copied, setCopied] = useState<"email" | "address" | "page" | null>(null);
 
-      <section className="relative overflow-hidden">
+  useEffect(() => {
+    try { setDayOps(window.localStorage.getItem("valkyrie.display") === "day"); } catch { /* preference storage is optional */ }
+    const update = () => {
+      const range = document.documentElement.scrollHeight - window.innerHeight;
+      setProgress(range > 0 ? Math.min(100, (window.scrollY / range) * 100) : 0);
+      setShowTop(window.scrollY > window.innerHeight * 0.8);
+    };
+    update();
+    window.addEventListener("scroll", update, { passive: true });
+    const sections = document.querySelectorAll("main section");
+    sections.forEach((section) => section.classList.add("reveal-section"));
+    const observer = new IntersectionObserver((entries) => entries.forEach((entry) => {
+      if (entry.isIntersecting) { entry.target.classList.add("is-visible"); observer.unobserve(entry.target); }
+    }), { rootMargin: "0px 0px -8%", threshold: 0.08 });
+    sections.forEach((section) => observer.observe(section));
+    return () => { window.removeEventListener("scroll", update); observer.disconnect(); };
+  }, []);
+
+  const toggleTheme = () => {
+    setDayOps((value) => {
+      const next = !value;
+      try { window.localStorage.setItem("valkyrie.display", next ? "day" : "night"); } catch { /* preference storage is optional */ }
+      return next;
+    });
+  };
+
+  const copy = async (kind: "email" | "address" | "page", value: string) => {
+    try { await navigator.clipboard.writeText(value); setCopied(kind); window.setTimeout(() => setCopied(null), 1800); } catch { setCopied(null); }
+  };
+
+  const year = new Date().getFullYear();
+  return (
+    <div id="top" className={`site-shell min-h-dvh bg-void text-paper ${dayOps ? "day-ops" : ""}`}>
+      <a className="skip-to-content" href="#main-content">SKIP TO MISSION CONTENT</a>
+      <Nav progress={progress} dayOps={dayOps} onTheme={toggleTheme} />
+
+      <section id="main-content" className="relative overflow-hidden" tabIndex={-1}>
         <img
           src="brand/tucano-photo.jpg"
           alt="A-29 Super Tucano on a predawn ramp"
@@ -156,14 +178,11 @@ export function Homepage() {
           </p>
           <div className="mt-10 flex flex-wrap items-center gap-4">
             <a href="#training" className="explore inline-flex items-center">
-              EXPLORE TRAINING
-            </a>
-            <a href="#gunslinger" className="explore explore-secondary inline-flex items-center">
-              A-29 GUNSLINGER
+              EXPLORE PILOT TRAINING
             </a>
           </div>
           <div className="mt-16 grid grid-cols-2 gap-3 border-t border-filament/20 pt-6 font-mono text-[10px] tracking-[0.2em] text-fog sm:grid-cols-5">
-            {["AIR SCHOOL", "JTAC", "PILOT", "MISSION SYSTEMS", "A-29"].map((item) => (
+            {["MILITARY AIR SCHOOL", "JTAC TRAINING", "ADVANCED PILOT TRAINING", "A-29 SUPER TUCANO", "FALCON FIELD · ARIZONA"].map((item) => (
               <div key={item} className="py-1">
                 {item}
               </div>
@@ -196,6 +215,8 @@ export function Homepage() {
                 src={cap.img}
                 alt=""
                 className="aspect-[16/9] w-full object-cover"
+                loading="lazy"
+                decoding="async"
                 crossOrigin="anonymous"
               />
               <div className="px-5 py-5">
@@ -271,6 +292,8 @@ export function Homepage() {
           src="brand/tucano-line-side.jpg"
           alt="Embraer A-29 Super Tucano technical line drawing"
           className="mx-auto mt-8 w-full max-w-6xl object-contain"
+          loading="lazy"
+          decoding="async"
           crossOrigin="anonymous"
         />
         <div className="mx-auto max-w-6xl px-5 py-12">
@@ -292,6 +315,30 @@ export function Homepage() {
         </div>
       </section>
 
+      <section id="faq" className="mx-auto max-w-4xl px-5 py-24">
+        <p className="font-mono text-[10px] tracking-[0.3em] text-filament">MISSION BRIEF · FREQUENTLY ASKED</p>
+        <h2 className="mt-3 font-display text-4xl font-semibold tracking-wide sm:text-5xl">Training questions, cleared.</h2>
+        <div className="faq-list mt-10">
+          {[
+            ["Where is Valkyrie Aero based?", "Valkyrie Aero operates from Falcon Field Airport in Mesa, Arizona."],
+            ["What training does Valkyrie Aero provide?", "Programs span cadet and foundational flight instruction, UPT and IFF-aligned development, advanced pilot instruction, JTAC training, and mission rehearsal."],
+            ["Is the A-29 Gunslinger currently an operational program?", "The site presents Gunslinger as an emerging manned counter-UAS concept. Existing military training and aviation work remain Valkyrie Aero’s operational foundation."],
+            ["How can a unit or partner begin a discussion?", "Contact Valkyrie Aero operations by email with the organization, training objective, location, and anticipated timeline."],
+          ].map(([question, answer]) => <details key={question}><summary>{question}</summary><p>{answer}</p></details>)}
+        </div>
+        <div className="contact-operations mt-12">
+          <div>
+            <p className="font-mono text-[9px] tracking-[0.24em] text-filament">OPEN A CHANNEL</p>
+            <h3 className="mt-2 font-display text-3xl font-semibold tracking-wide">Discuss a training requirement.</h3>
+            <p className="mt-2 max-w-xl text-sm text-fog">Connect with Valkyrie Aero operations regarding training objectives, location, and anticipated timeline.</p>
+          </div>
+          <div className="flex flex-wrap gap-3">
+            <a className="explore inline-flex items-center" href="mailto:info@valkyrieaero.com?subject=Training%20Requirement%20Inquiry">CONTACT OPERATIONS</a>
+            <button className="copy-btn min-h-12" type="button" aria-live="polite" onClick={() => copy("page", window.location.href)}>{copied === "page" ? "PAGE LINK COPIED" : "COPY PAGE LINK"}</button>
+          </div>
+        </div>
+      </section>
+
       <footer id="contact" className="border-t border-filament/20">
         <div className="mx-auto flex max-w-6xl flex-col gap-6 px-5 py-10 sm:flex-row sm:items-start sm:justify-between">
           <div className="flex items-center gap-3">
@@ -304,18 +351,26 @@ export function Homepage() {
             </div>
           </div>
           <div className="max-w-sm font-mono text-[10px] leading-relaxed tracking-[0.14em] text-fog">
-            <p>4562 E MALLORY CIRCLE SUITE 104</p>
-            <p>MESA, AZ 85215 · FALCON FIELD AIRPORT</p>
-            <p className="mt-2">INFO@VALKYRIEAERO.COM</p>
+            <a className="contact-link" href="https://www.google.com/maps/search/?api=1&query=4562+E+Mallory+Circle+Suite+104+Mesa+AZ+85215">4562 E MALLORY CIRCLE SUITE 104<br />MESA, AZ 85215 · FALCON FIELD AIRPORT</a>
+            <a className="contact-link mt-3 block" href="mailto:info@valkyrieaero.com">INFO@VALKYRIEAERO.COM</a>
+            <div className="mt-4 flex flex-wrap gap-2 print:hidden">
+              <button className="copy-btn" type="button" onClick={() => copy("address", "4562 E Mallory Circle Suite 104, Mesa, AZ 85215")}>{copied === "address" ? "ADDRESS COPIED" : "COPY ADDRESS"}</button>
+              <button className="copy-btn" type="button" onClick={() => copy("email", "info@valkyrieaero.com")}>{copied === "email" ? "EMAIL COPIED" : "COPY EMAIL"}</button>
+            </div>
           </div>
         </div>
         <div className="border-t border-filament/15 px-5 py-4 text-center font-mono text-[9px] tracking-[0.2em] text-fog">
           <span className="usa-credit">
             <span className="css-us-flag" role="img" aria-label="United States flag"><i /></span>
-            <span><b>CREATED IN THE USA</b> · SANCHEZ &amp; SCHMITT</span>
+            <span><b>CREATED IN THE USA</b> · SANCHEZ &amp; SCHMITT · {year}</span>
           </span>
+          <nav className="mt-3 flex justify-center gap-5" aria-label="Legal">
+            <a className="hover:text-paper" href="privacy/">PRIVACY</a>
+            <a className="hover:text-paper" href="terms/">TERMS</a>
+          </nav>
         </div>
       </footer>
+      {showTop ? <button type="button" className="return-top print:hidden" onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}>RETURN TO FLIGHT LEVEL</button> : null}
     </div>
   );
 }

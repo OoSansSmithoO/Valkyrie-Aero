@@ -78,9 +78,10 @@ function Gate({
   const go = useCallback(() => {
     if (lock.current) return;
     lock.current = true;
+    if (!seen && !reduced) unlockAudio();
     setSpark(true);
     window.setTimeout(() => onAuthorize(), 420);
-  }, [onAuthorize]);
+  }, [onAuthorize, reduced, seen]);
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -146,7 +147,7 @@ function Gate({
             ? "MOTION REDUCED · DIRECT ENTRY"
             : seen
               ? "CLICK ANYWHERE · SHORT BRIEFING"
-              : "CLICK ANYWHERE · ENTER FLIGHT BRIEFING"}
+              : "CLICK ANYWHERE · ENTER FLIGHT BRIEFING · CHORAL AUDIO"}
         </p>
       </div>
     </div>
@@ -158,11 +159,13 @@ function Briefing({
   muted,
   onDone,
   onSkip,
+  onToggleMuted,
 }: {
   mode: BriefingMode;
   muted: boolean;
   onDone: () => void;
   onSkip: () => void;
+  onToggleMuted: () => void;
 }) {
   const [snap, setSnap] = useState<Snapshot>(() => sample(0, mode));
   const doneRef = useRef(false);
@@ -293,6 +296,14 @@ function Briefing({
           <div className="h-full bg-filament" style={{ width: `${snap.progress * 100}%` }} />
         </div>
         <div className="flex gap-2">
+          <button
+            type="button"
+            className="skip-btn"
+            aria-pressed={muted}
+            onClick={onToggleMuted}
+          >
+            {muted ? "SOUND ON" : "SOUND OFF"}
+          </button>
           <button type="button" className="skip-btn" onClick={onSkip}>
             SKIP
           </button>
@@ -310,6 +321,7 @@ export function CinematicIntro() {
   const play = useIntro((s) => s.play);
   const complete = useIntro((s) => s.complete);
   const skip = useIntro((s) => s.skip);
+  const setMuted = useIntro((s) => s.setMuted);
   const hydrateSeen = useIntro((s) => s.hydrateSeen);
   const reduced = usePrefersReduced();
 
@@ -318,7 +330,6 @@ export function CinematicIntro() {
   }, [hydrateSeen]);
 
   const authorize = () => {
-    unlockAudio();
     if (reduced) {
       skip();
       return;
@@ -338,6 +349,7 @@ export function CinematicIntro() {
       muted={muted}
       onDone={complete}
       onSkip={skip}
+      onToggleMuted={() => setMuted(!muted)}
     />
   );
 }

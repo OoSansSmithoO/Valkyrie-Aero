@@ -47,6 +47,9 @@ jobs:
       - name: Disable Jekyll processing
         run: touch .vercel/output/static/.nojekyll
 
+      - name: Check generated links
+        run: npm run check:links
+
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
         with:
